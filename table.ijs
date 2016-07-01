@@ -1,12 +1,18 @@
+NB. Replace non-space whitespace characters with spaces.
+clean =: monad define
+ws =. TAB,CR,LF,FF
+mask =. +./ y ="1 0 ws
+' ' (I.mask) } y
+)
+
 NB. Read a file into a table.  Use _ for non-numeric entries.
 NB. y: file name
-NB.!! Consider making the fill value _.
 read_table =: monad define
-_&".;._2 fread y
+data =. _&".@:clean ;. _2 fread y
 NB.!! Consider filtering out rows made entirely of _.
 NB.!! Verb that's false only for rows entirely made of _.
-NB.!! good_row =. *./"1@:~:&_
-NB.!! (#~ good_row) data
+good_row =. *./"1@:~:&_
+(#~ good_row) data
 )
 
 NB. Return a file or part of a file as a column of boxed strings.
