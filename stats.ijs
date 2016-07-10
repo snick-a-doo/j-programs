@@ -18,6 +18,8 @@ avg , sd , (100*sd%avg) , sp , (100*sp%avg)
 
 error =: -~ % [
 
+pct =: 100&*@:error
+
 NB. x: 2-element array of the smallest and largest allowed values
 NB. y: value to compare with spec range.
 NB. return: y - low, 0, or y - high depending on whether y is below, in,
