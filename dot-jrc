@@ -15,5 +15,9 @@ load '/root/programs/J/import.ijs'
 add_to_path '~/programs/J'
 
 pwd =: 1!:43
-cd =: pwd@1!:44
+pwd =: 1!:43
+cd =: monad define
+1!:44 y
+pwd ''
+)
 ls =: dir
