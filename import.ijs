@@ -44,6 +44,6 @@ if. +./ found do.
     load path
 else.
     echo 'File ''' , file , ''' not found in'
-    echo path ''
+    echo j_load_path ''
 end.
 )
