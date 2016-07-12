@@ -9,9 +9,8 @@ NB. Read a file into a table.  Use _ for non-numeric entries.
 NB. y: file name
 read_table =: monad define
 data =. _&".@:clean ;. _2 fread y
-NB.!! Consider filtering out rows made entirely of _.
-NB.!! Verb that's false only for rows entirely made of _.
-good_row =. *./"1@:~:&_
+NB. Filter out rows made entirely of _.
+good_row =. +./"1@:~:&_
 (#~ good_row) data
 )
 

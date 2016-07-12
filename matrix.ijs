@@ -16,3 +16,5 @@ mI =: i. =/ i.
 NB. Column of a matrix
 mcol =: {"1
 
+NB. Matrix element
+mij =: (<@:;/@:[) { ]
