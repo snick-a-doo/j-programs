@@ -35,14 +35,11 @@ NB.
 NB. This defaults to ~temp
 GNUPLOTOUT=: jpath '~temp\'
 
-NB. =========================================================
-NB. gnuplot command buffer
-SETBUFFER=: ''
-NB. defs
+NB. Gnuplot 'set' options
+gset_options =: ''
 
-NB. =========================================================
-NB. global SETTINGS has possible gnuplot set names
-SETTINGS=: 0 : 0
+NB. Possible gnuplot 'set' options
+gset_all_options =: noun define
 angles
 arrow
 autoscale
@@ -104,9 +101,8 @@ zdtics
 zmtics
 )
 
-NB. =========================================================
-NB. global STYLES has possible gnuplot styles
-STYLES=: 0 : 0
+NB. Possible gnuplot styles
+gset_all_styles =: noun define
 boxes
 boxerrorbars
 dots
@@ -117,6 +113,7 @@ linespoints
 points
 steps
 )
+
 NB. gnuplot utils
 
 deb=: #~ (+. 1: |. (> </\))@(' '&~:)
@@ -200,18 +197,7 @@ else.
 end.
 )
 
-NB. =========================================================
-NB. following builds a shell script for running gnuplot
-NB. but cannot get this to work.  cdb dec 2006
-gphost=: 3 : 0
-2!:1 'gnuplot --persist -e "load ''',GNUPLOTOUT,'gnu.plt"'
-return.
-f=. jpath '~temp/shell.sh'
-y=. y, LF -. {:y
-y 1!:2 <f
-'rwx------' 1!:7 <f
-2!:0 f
-1!:55 <f
+gphost =: monad define
 )
 
 NB. gplot main functions
@@ -251,11 +237,10 @@ txt=. txt, gpsetcommand''
 txt=. txt, x gpcommand cmd;shp;fdat
 txt 1!:2 <fplt
 
-NB. ---------------------------------------------------------
 if. IFWIN *. 0 < #exe do.
   fork_jtask_ '"',exe,'" "',fplt,'" -'
 else.
-  gphost exe,' "',fplt,'" -'
+  fork_jtask_ exe , ' --persist -e "load ''' , fplt , '"'
 end.
 
 empty''
@@ -308,27 +293,22 @@ NB. ---------------------------------------------------------
 x,'plot ',range, ' ', _3 }. ,def ,"1 cmd
 )
 
-NB. =========================================================
-NB. gset
-NB. build set arguments in SETBUFFER
-NB. if y is empty, return and reset buffer
-gset=: 3 : 0
-r=. empty ''
-if. #y do.
-  y=. y, ';' -. {: y   NB. ensure trailing ;
-  SETBUFFER=: SETBUFFER,y
-else.
-  if. 0=4!:0 <'SETBUFFER' do.
-    r=. SETBUFFER
-  end.
-  NB.SETBUFFER=: ''
-end.
-r
+end_option =: monad define
+y , ((0 < # y) *. (';' ~: {: y)) $ ';'
+)
+
+NB. Specify Gnuplot 'set' options.
+NB. Monad: Append y to the options.
+NB. Dyad: Set options to x, then append y.
+gset =: verb define
+gset_options =: gset_options , end_option y
+:
+gset_options =: end_option x , end_option y
 )
 
 NB. =========================================================
 gpsetcommand=: 3 : 0
-;< @ ('set '&, @ (,&LF)) ;._2 gset''
+;< @ ('set '&, @ (,&LF)) ;._2 gset_options
 )
 
 NB. =========================================================
