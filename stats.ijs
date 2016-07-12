@@ -70,3 +70,10 @@ amp * ^ - exp
 
 NB. Make a list with the same length as x where each value is y.
 line =: #@[ # ]
+
+combi =: dyad define
+if. x = # y do. y
+elseif. x = 1 do. ((#y) , 1) $ y
+elseif. 1 do. (({. y) ,. (<: x) combi }. y) , 
+end.
+)
