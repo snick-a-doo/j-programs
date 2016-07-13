@@ -5,16 +5,18 @@ NB. '~.jprofile.ijs' is loaded automatically, but before the standard
 NB. library.  This file should be loaded by passing it as an argument
 NB. to jconsole.
 
-NB. Use an ASCII hyphen instead of the Unicode horizontal line.  The
-NB. latter is too long on Android and messes up the spacing.
-NB. box_chars =: (16 + i.11) { a.
-NB. 9!:7 '-' 10 } box_chars
+NB. Box display style
+set_box =: 9!:7
+unicode_box =: (16 + i.11) { a.
+ascii_box =: '+++++++++|-'
+minimal_box =: '.........  '
+set_box unicode_box
 
 NB. Set the load path.
-load '/root/programs/J/import.ijs'
+load (getenv 'HOME') , '/programs/J/import.ijs'
 add_to_path '~/programs/J'
 
-pwd =: 1!:43
+NB. Shell-like commands
 pwd =: 1!:43
 cd =: monad define
 1!:44 y
