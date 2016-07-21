@@ -1,15 +1,42 @@
-update_fpi =: dyad define
+NB. Return an array with 'x' inserted at the 'm'th element of y.
+NB. You may need parentheses around 'm' and 'insert'.
+insert =: adverb define
+{. , m , }.
+)
+
+NB. Append the contents of an array of boxes to a file.  Return the number of bytes
+NB. written.
+fappendb =: dyad define
+boxes =. x
+file =. y
++/ (fappends & file) @ > boxes
+)
+
+NB. Write the contents of an array of boxes to a file.  Return the number of bytes
+NB. written.
+fwriteb =: dyad define
+bytes =. (> {. x) fwrites y
+NB. Append the trailing items to avoid blanking the file.
+bytes + (}. x) fappendb y
+)
+
+NB. Write an FPI version 6 file given a v5 file.  Optionally, pass a value for the new
+NB. thermal conductivity entry.
+update_fpi =: verb define
+0.0 update_fpi y
+:
 tc =. x
-in_file =. y
-out_file =. '../fpiv6/' , in_file
+NB. in_file =. y
 
-table =. 'b' freads in_file
-NB. Consider writing an adverb that inserts an element at an index.
-new_table =. }. (5 {. table) , (< 'TC: ' , ": tc) , (5 }. table)
+for_in_file. y do.
+  out_file =. '../fpiv6/' , in_file
 
-NB. Use fwrites for the first line to get rid of the old contents.
-'FPIv6' fwrites out_file
-NB. Append line-by-line to avoid filling the lines.
-NB.!! Consider writing a verb for writing an array of boxed strings without filling.
-(fappends & out_file) @ > new_table
+  in_table =. 'b' freads in_file
+  echo $ in_file
+  echo $ in_table
+  tc_entry =. < 'TC ' , ": tc
+  out_table =. 'FPIv6' ; }. 6 (tc_entry insert) in_table
+
+  out_table fwriteb out_file
+end.
 )
