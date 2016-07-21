@@ -12,6 +12,13 @@ model =. cs p. xs
 ((# xs) {. cs) , xs , ys , model ,: (model - ys)
 )
 
+coeff =: monad define
+NB. Return a list of the coefficients.  Trailing zero coefficients are removed.
+cs =. {. y
+order =. (0 = cs) i: 0  NB. The index of the last non-zero coefficient 
+(>: order) {. cs
+)
+
 NB. Turn the result of fit into an argument for plot.  x: the rows to plot as
 NB. overlays vs. the x-values (row 1).  As a monad, rows 2 (y-values) and 3
 NB. (model y-values) are plotted.  y: the result of fit.
