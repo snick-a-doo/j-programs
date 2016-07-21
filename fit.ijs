@@ -1,7 +1,12 @@
 NB. Generate a #x by y+1 matrix where each column is x^j.
 x_powers =: |: @ (^"1 0 i.@>:)
 
-NB. Return the coefficients for a polynomial fit.
+NB. Return a table for a polynomial fit.  Rows:
+NB. - Coefficients
+NB. - Passed-in x-values
+NB. - Passed-in y-values
+NB. - Fitted y-values
+NB. - Residuals
 NB. x: order
 NB. y: 2-row table: x-values and y-values 
 fit =: dyad define
