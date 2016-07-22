@@ -26,9 +26,6 @@ phi_L =. rho * (1 - eta_a) * phi_T
 eta =. eta_a % >: phi_L % phi_C
 tau =. tau_max * 1 - eta % eta_a
                     NB. Linear in active concentration.  Zeroed and inverted.
-NB. tau =. tau_max * 1 - rho
-                    NB. Linear in carrier fraction
-NB. coefficients =. phi_C * {. order fit tau ,: rho * eta_a
 coefficients =. {. order fit tau ,: (1 - rho) * eta_a
                     NB. The first row of the fit has the coefficients,
                     NB. zero-filled.
@@ -52,9 +49,15 @@ t_peak =. t_max % 4 NB. Time at peak TCD signal, s
 t =. dt * i. >: <. 2000 % dt
                     NB. Array of TCD measurement times
 tau_peak =. 0.8     NB. Peak TCD signal
-width =. (Q * tau_max) % phi_C * eta_a * tau_peak * %: 2p1
-                    NB. Peak width: FWHM = width * 2 * %: 2 * ^. 2
-t ; tau_peak * ^ _1r2 * *: (t - t_peak) % width
+amp =. phi_C % >: (tau_max % tau_peak) * <: % eta_a
+                    NB. Peak consumption rate
+width =. Q % amp * %: 2p1
+             	    NB. Width of consumption peak: FWHM = width * 2 * %: 2 * ^. 2
+phi_Q =. amp * ^ _1r2 * *: (t - t_peak) % width
+      	       	    NB. Consumption rate as a function of time.
+tau =. (tau_max * (1 - eta_a) * phi_Q) % eta_a * phi_C - phi_Q
+       		    NB. TCD response to consumption of active gas
+t ; tau
 )
 
 consumption =: dyad define
