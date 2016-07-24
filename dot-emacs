@@ -1,0 +1,25 @@
+;;-*-emacs-lisp-*-
+;; Emacs customization for j-mode and inferior-j-mode
+
+(defun j-load-script (file)
+  "Prompt for a J script file to load.
+The 'load' command with file path is entered.  The cursor is left at
+the end of the line."
+  (interactive "fScript: ")
+  (insert (format "load '%s'" file)))
+
+(add-hook 'inferior-j-mode-hook
+	  (lambda ()
+	    (define-key inferior-j-mode-map (kbd "C-c l") 'j-load-script)))
+
+(add-hook 'j-mode-hook
+	  (lambda ()
+	    ;; J-mode is not derived from prog-mode. 
+            (turn-on-auto-fill)
+            (flyspell-prog-mode)
+	    ;; Make 'NB.' dim so it doesn't look like part of the
+	    ;; comment.  Make 'define' lines bright to make it easy to
+	    ;; see where definitions start.
+	    (font-lock-add-keywords 'j-mode
+				    '(("\\<NB.\\>" 0 j-other-face t)
+				      ("^.*define\\>" 0 font-lock-keyword-face t)))))

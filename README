@@ -1,2 +1,7 @@
+-*-text-*-
+
 My personal J programs.  See http://www.jsoftware.com and the Wikipedia entry
 https://en.wikipedia.org/wiki/J_programming_language for more information on J.
+
+The contents of dot-emacs should go into ~/.emacs.  startup.ijs should
+be copied to your user/config directory and possibly customized.
