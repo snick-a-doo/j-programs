@@ -19,6 +19,7 @@ phi_Q =. y
 ((eta_a * phi_C) - phi_Q) % phi_C - phi_Q
 )
 phi_of_eta =: dyad define
+NB. Return the consumption rate for the given concentration of active gas.
 phi_C =. x
 eta =. y
 phi_C * (eta_a - eta) % 1 - eta
@@ -32,6 +33,7 @@ NB. linear in active flow.  Zeroed and inverted for high TC active gas.
 tau_max * 1 - eta % eta_a
 )
 eta_of_tau =: monad define
+NB. Return the active gas concentration for the given TCD signal.
 tau =. y
 eta_a * 1 - tau % tau_max
 )
@@ -47,7 +49,7 @@ NB. Carrier flow steps from 100% to 0 in 10% decrements.  Inert flow
 NB. from the loop inlet is adjusted to maintain constant inert flow.
 NB. Total flow is not constant; this emulates gas consumption during
 NB. an analysis.
-phi_Ci =. phi_C_cal * 1 - 0.1 * i. 11
+phi_Ci =. phi_C_cal * steps 1 0 10
 phi_Li =. (1 - eta_a) * phi_C_cal - phi_Ci
 eta =. eta_a % >: phi_Li % phi_Ci
 coeffs =. coeff order fit (tau_of_eta eta) ,: eta_a * phi_Ci % phi_C_cal
@@ -78,7 +80,7 @@ tau_peak =. 0.8
 amp =. phi_C_anl phi_of_eta eta_of_tau tau_peak
 
 NB. Set the width so the total gas consumed equals 'Q'.  By the
-NB. integral of Gaussian, Q = amp * width * %: 2p.
+NB. integral of Gaussian, Q = amp * width * %: 2p1.
 NB. FWHM = width * 2 * %: 2 * ^. 2
 width =. Q % amp * %: 2p1
 phi_Q =. amp * ^ _1r2 * *: (t - t_peak) % width
@@ -93,11 +95,13 @@ mass =. y                 NB. Sample mass
 )
 
 reduce =: dyad define
+NB. Return the quantity consumed given a calibrated TCD signal.
+mass =. x
+'time active_flow' =. > y
+
 NB. Integrate a calibrated signal to get quantity consumed.  The first
 NB. point gives the baseline.  Time interval is assumed to be
 NB. constant, equal to the difference in the first two times.
-mass =. x
-'time active_flow' =. > y
 dt =. -~/ 2 {. time
 mass %~ dt * +/ (-~ {.) active_flow
 )
