@@ -1,12 +1,15 @@
 ;;-*-emacs-lisp-*-
 ;; Emacs customization for j-mode and inferior-j-mode
 
+(defvar j-programs-directory
+  (concat (getenv "HOME") "/programs/J")
+  "Default directory for 'j-load-script'")
+
 (defun j-load-script (file)
-  "Prompt for a J script file to load.
-The 'load' command with file path is entered.  The cursor is left at
-the end of the line."
-  (interactive "fScript: ")
-  (insert (format "load '%s'" file)))
+  "Prompt for a J script file to load from 'j-programs-directory'."
+  (interactive (list (read-file-name "Script: " j-programs-directory nil t)))
+  (insert (format "load '%s'" file))
+  (comint-send-input))
 
 (add-hook 'inferior-j-mode-hook
 	  (lambda ()
