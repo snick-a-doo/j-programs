@@ -38,30 +38,37 @@ tau =. y
 eta_a * 1 - tau % tau_max
 )
 
-tcd_cal =: adverb define
-NB. Make a function that converts a raw TCD signal in volts to flow
-NB. rate of the active gas as a fraction of total carrier flow.  The
-NB. function is a polynomial of the given order.  The signal has the
-NB. same units as the carrier flow rate.
-order =. m
+fit_cal =: monad define
+NB. Return fit parameters for active flow vs. TCD signal.  A row for
+NB. each item of 'scale', a column for each coefficient plus one for
+NB. RMS error.
+order =. y
 
 NB. Carrier flow steps from 100% to 0 in 10% decrements.  Inert flow
 NB. from the loop inlet is adjusted to maintain constant inert flow.
 NB. Total flow is not constant; this emulates gas consumption during
 NB. an analysis.
 phi_Ci =. phi_C_cal * steps 1 0 10
-phi_Li =. (1 - eta_a) * phi_C_cal - phi_Ci
-eta =. eta_a % >: phi_Li % phi_Ci
-coeffs =. coeff order fit (tau_of_eta eta) ,: eta_a * phi_Ci % phi_C_cal
-echo coeffs
-coeffs&p.
+phi_Li =. scale */ (1 - eta_a) * phi_C_cal - phi_Ci
+eta =. |: eta_a % >: (|: phi_Li) % phi_Ci
+(coeff ,. rms) order fit (tau_of_eta eta) ,:"1 1 eta_a * phi_Ci % phi_C_cal
+)
+
+tcd_cal =: adverb define
+NB. Make a function that converts a raw TCD signal in volts to flow
+NB. rate of the active gas as a fraction of total carrier flow.  The
+NB. function is a polynomial of the given order.  The signal has the
+NB. same units as the carrier flow rate.
+order =. m
+(}:"1 fit_cal order)&p.
 )
 
 calibrate =: dyad define
 NB. Apply the calibration to a raw TCD signal
 order =. x
-'time signal' =. > y
-time ; phi_C_anl * order tcd_cal signal
+time =. > {. y
+signal =. > {: y
+time ; phi_C_anl * order tcd_cal (# scale) # ,: signal
 )
 
 tpr =: dyad define
@@ -97,11 +104,12 @@ mass =. y                 NB. Sample mass
 reduce =: dyad define
 NB. Return the quantity consumed given a calibrated TCD signal.
 mass =. x
-'time active_flow' =. > y
+time =. > {. y
+active_flow =. > {: y
 
 NB. Integrate a calibrated signal to get quantity consumed.  The first
 NB. point gives the baseline.  Time interval is assumed to be
 NB. constant, equal to the difference in the first two times.
 dt =. -~/ 2 {. time
-mass %~ dt * +/ (-~ {.) active_flow
+mass %~ dt * +/"1 (-~ {.)"1 active_flow
 )

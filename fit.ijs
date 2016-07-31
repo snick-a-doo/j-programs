@@ -9,7 +9,7 @@ NB. - Fitted y-values
 NB. - Residuals
 NB. x: order
 NB. y: 2-row table: x-values and y-values 
-fit =: dyad define
+fit =: dyad define "0 2
 'xs ys' =. y
 order =. x
 cs =. ys %. xs x_powers order
@@ -17,11 +17,16 @@ model =. cs p. xs
 ((# xs) {. cs) , xs , ys , model ,: (model - ys)
 )
 
-coeff =: monad define
+coeff =: monad define "2
 NB. Return a list of the coefficients.  Trailing zero coefficients are removed.
 cs =. {. y
 order =. (0 = cs) i: 0  NB. The index of the last non-zero coefficient 
 (>: order) {. cs
+)
+
+rms =: monad define "2
+NB. Return the root mean square of the residuals.
+%: (+/ % #) *: 4 { y
 )
 
 NB. Turn the result of fit into an argument for plot.  x: the rows to plot as
