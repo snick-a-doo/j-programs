@@ -2,7 +2,7 @@
 ;; Emacs customization for j-mode and inferior-j-mode
 
 (defvar j-programs-directory
-  (concat (getenv "HOME") "/programs/J")
+  (expand-file-name "~/programs/J")
   "Default directory for 'j-load-script'")
 
 (defun j-load-script (file)
