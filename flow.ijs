@@ -11,6 +11,7 @@ eta_a =: 0.1              NB. 10% H2 in Ar
 phi_C_cal =: 50r60        NB. 50 cm3/min STP for calibration
 phi_C_anl =: 50r60        NB. 50 cm3/min STP for analysis
 tau_max =: 0.9            NB. Full-scale TCD signal, V
+scale =: 1$1
 
 eta_of_phi =: dyad define
 NB. Return the concentration of active gas for the given consumption rate. 
@@ -49,8 +50,8 @@ NB. from the loop inlet is adjusted to maintain constant inert flow.
 NB. Total flow is not constant; this emulates gas consumption during
 NB. an analysis.
 phi_Ci =. phi_C_cal * steps 1 0 10
-phi_Li =. scale */ (1 - eta_a) * phi_C_cal - phi_Ci
-eta =. |: eta_a % >: (|: phi_Li) % phi_Ci
+phi_Li =. (1 - eta_a) * phi_C_cal - phi_Ci
+eta =. eta_a % >: scale */ phi_Li % phi_Ci
 (coeff ,. rms) order fit (tau_of_eta eta) ,:"1 1 eta_a * phi_Ci % phi_C_cal
 )
 
